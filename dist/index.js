@@ -14,8 +14,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SheetMasterClient = void 0;
+exports.scaffold = exports.SheetMasterClient = void 0;
 var client_1 = require("./client");
 Object.defineProperty(exports, "SheetMasterClient", { enumerable: true, get: function () { return client_1.SheetMasterClient; } });
+var scaffold_1 = require("./scaffold");
+Object.defineProperty(exports, "scaffold", { enumerable: true, get: function () { return scaffold_1.scaffold; } });
 __exportStar(require("./types"), exports);
 //# sourceMappingURL=index.js.map

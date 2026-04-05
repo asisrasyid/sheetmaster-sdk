@@ -1,11 +1,16 @@
 {
   "name": "sheetmaster-sdk",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for SheetMaster — Google Apps Script backed task management API",
+  "version": "0.2.0",
+  "description": "TypeScript SDK for SheetMaster — task management + agent workspace scaffolding",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "sheetmaster-sdk": "./bin/init.js"
+  },
   "files": [
     "dist",
+    "templates",
+    "bin",
     "README.md"
   ],
   "scripts": {
@@ -16,11 +21,14 @@
     "sheetmaster",
     "task-management",
     "google-apps-script",
-    "sdk"
+    "sdk",
+    "agent",
+    "scaffold"
   ],
   "author": "asisrasyid",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^25.5.2",
     "typescript": "^5.4.0"
   }
 }
