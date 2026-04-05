@@ -16,16 +16,27 @@ export class SheetMasterClient {
   private async request<T>(action: string, params: Record<string, unknown> = {}): Promise<T> {
     const body = JSON.stringify({ apiKey: this.apiKey, action, ...params });
 
-    const res = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body,
-      redirect: 'follow',
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60_000);
 
-    const data = await res.json() as { success: boolean; data: T; error?: string };
-    if (!data.success) throw new Error(data.error ?? 'SheetMaster API error');
-    return data.data;
+    try {
+      const res = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body,
+        redirect: 'follow',
+        signal: controller.signal,
+      });
+
+      const data = await res.json() as { success: boolean; data: T; error?: string };
+      if (!data.success) throw new Error(data.error ?? 'SheetMaster API error');
+      return data.data;
+    } catch (err: any) {
+      if (err.name === 'AbortError') throw new Error('SheetMaster API timeout (>60s)');
+      throw err;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   // ── Boards ────────────────────────────────────────────────────

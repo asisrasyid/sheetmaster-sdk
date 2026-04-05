@@ -8,16 +8,29 @@ class SheetMasterClient {
     }
     async request(action, params = {}) {
         const body = JSON.stringify({ apiKey: this.apiKey, action, ...params });
-        const res = await fetch(this.baseUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body,
-            redirect: 'follow',
-        });
-        const data = await res.json();
-        if (!data.success)
-            throw new Error(data.error ?? 'SheetMaster API error');
-        return data.data;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 60000);
+        try {
+            const res = await fetch(this.baseUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body,
+                redirect: 'follow',
+                signal: controller.signal,
+            });
+            const data = await res.json();
+            if (!data.success)
+                throw new Error(data.error ?? 'SheetMaster API error');
+            return data.data;
+        }
+        catch (err) {
+            if (err.name === 'AbortError')
+                throw new Error('SheetMaster API timeout (>60s)');
+            throw err;
+        }
+        finally {
+            clearTimeout(timeout);
+        }
     }
     // ── Boards ────────────────────────────────────────────────────
     /** Ambil semua board yang dimiliki atau diikuti user */
