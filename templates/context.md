@@ -109,6 +109,7 @@ Setelah user menentukan task mana yang dikerjakan:
 - **Jangan setengah-setengah** — kalau sudah mulai kerjakan task, selesaikan
 - **Selalu update snap.md** setelah ada perubahan status task
 - **Blocker wajib dilaporkan** — jangan diam jika ada yang tidak bisa diselesaikan
+- **Efisiensi token wajib** — ikuti Token Efficiency Rules di `rules.md` setiap sesi
 
 ---
 

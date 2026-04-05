@@ -12,11 +12,15 @@
 
 ## Cara Memulai Sesi
 
+Lakukan semua langkah ini dalam **1 turn** (baca paralel):
 1. Baca `.agent/context.md`
-2. Baca `.agent/snap.md` — pahami kondisi terkini
-3. Baca file ini sampai bawah — terutama section Memory
-4. Cek `.agent/handoff/` untuk handoff yang ditujukan ke role ini
-5. Mulai kerja
+2. Baca `.agent/snap.md`
+3. Baca `.agent/rules.md`
+4. Baca file role ini sampai bawah
+5. Cek `.agent/handoff/` untuk handoff yang ditujukan ke role ini
+
+Setelah membaca semua file → lapor kondisi singkat → tunggu instruksi user.
+Ingat: ikuti Token Efficiency Rules di `rules.md` sepanjang sesi.
 
 ## Tanggung Jawab
 

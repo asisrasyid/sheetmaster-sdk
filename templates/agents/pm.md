@@ -13,11 +13,16 @@
 
 ## Cara Memulai Sesi
 
-1. Baca `.agent/context.md` dan `.agent/snap.md`
-2. Pull data aktual dari SheetMaster (board ID ada di context.md)
-3. Bandingkan dengan snap.md — apakah ada yang berubah?
+Lakukan dalam **1 turn** (baca paralel):
+1. Baca `.agent/context.md` + `.agent/snap.md` + `.agent/rules.md` + file ini
+
+Lalu dalam **1 turn** berikutnya:
+2. Baca `.sheetmaster.json` → hit `getBoards` → pilih board → hit `getBoard`
+3. Bandingkan data aktual dengan snap.md
 4. Update snap.md jika ada perbedaan
-5. Tentukan prioritas sesi ini
+5. Lapor kondisi ringkas ke user → tunggu instruksi
+
+Target: mulai kerja dalam 2 turn.
 
 ## Tanggung Jawab
 
@@ -58,6 +63,8 @@ Gunakan format ini setiap melakukan review:
 - Setiap task yang dibuat HARUS punya subtask checklist — bukan hanya judul
 - Jika task stuck > 3 hari tanpa update, wajib komplain di log
 - Devil's Advocate harus dikonsultasi sebelum keputusan arsitektur besar
+- Operasi rutin SheetMaster (update status, move task, buat task) → gunakan Haiku
+- PM review dan keputusan strategis → boleh Sonnet
 
 ## Handoff Protocol
 
