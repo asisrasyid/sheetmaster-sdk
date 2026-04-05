@@ -31,12 +31,14 @@ async function scaffold(targetDir) {
     const projectDesc = await ask(rl, 'Deskripsi singkat: ');
     const techStack = await ask(rl, 'Tech stack (contoh: Next.js, Python, PostgreSQL): ');
     const boardId = await ask(rl, 'SheetMaster Board ID (kosongkan jika belum ada): ');
+    const apiKey = await ask(rl, 'SheetMaster API Key (kosongkan jika belum ada): ');
+    const baseUrl = await ask(rl, 'SheetMaster URL (kosongkan jika belum ada): ');
     rl.close();
     const vars = {
         PROJECT_NAME: projectName,
         PROJECT_DESC: projectDesc,
         TECH_STACK: techStack,
-        BOARD_ID: boardId || 'belum-dikonfigurasi',
+        BOARD_ID: boardId || 'YOUR_BOARD_ID_HERE',
         DATE: new Date().toISOString().split('T')[0],
     };
     const agentDir = path_1.default.join(targetDir, '.agent');
@@ -45,6 +47,27 @@ async function scaffold(targetDir) {
     ensureDir(agentDir);
     ensureDir(agentsDir);
     ensureDir(handoffDir);
+    // Buat .sheetmaster.json
+    const configPath = path_1.default.join(targetDir, '.sheetmaster.json');
+    const config = {
+        apiKey: apiKey || 'YOUR_API_KEY_HERE',
+        baseUrl: baseUrl || 'YOUR_SHEETMASTER_URL_HERE',
+        boardId: boardId || 'YOUR_BOARD_ID_HERE',
+    };
+    fs_1.default.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
+    console.log('\n  + .sheetmaster.json');
+    // Auto-append ke .gitignore
+    const gitignorePath = path_1.default.join(targetDir, '.gitignore');
+    const gitignoreEntry = '\n# SheetMaster credentials\n.sheetmaster.json\n';
+    if (fs_1.default.existsSync(gitignorePath)) {
+        const existing = fs_1.default.readFileSync(gitignorePath, 'utf-8');
+        if (!existing.includes('.sheetmaster.json')) {
+            fs_1.default.appendFileSync(gitignorePath, gitignoreEntry, 'utf-8');
+        }
+    }
+    else {
+        fs_1.default.writeFileSync(gitignorePath, gitignoreEntry.trim() + '\n', 'utf-8');
+    }
     console.log('\nMembuat file context...');
     // Root files
     for (const file of ['context.md', 'snap.md', 'log.md', 'decisions.md', 'rules.md']) {
@@ -68,10 +91,10 @@ async function scaffold(targetDir) {
             `_File ini akan diisi oleh ${from.toUpperCase()} Agent sebelum menyerahkan pekerjaan ke ${to.toUpperCase()} Agent._\n`, 'utf-8');
         console.log(`  + .agent/handoff/${filename}`);
     }
-    console.log(`\n✓ Selesai! Agent context project "${projectName}" siap di ${agentDir}`);
-    console.log('\nLangkah selanjutnya:');
-    console.log('  1. Buka .agent/context.md — lengkapi bagian yang masih kosong');
-    console.log('  2. Tambahkan .agent/ ke .gitignore jika tidak ingin di-commit');
-    console.log('  3. Panggil agent dengan instruksi: "baca .agent/context.md dulu sebelum mulai"\n');
+    console.log(`\n✓ Selesai! Project "${projectName}" siap.`);
+    console.log('\n--- Langkah selanjutnya ---');
+    console.log('  1. Buka .sheetmaster.json — isi apiKey, baseUrl, boardId jika belum');
+    console.log('  2. Panggil Claude dengan perintah:');
+    console.log('\n     Baca .agent/context.md. Cek task yang tersedia. Laporkan.\n');
 }
 //# sourceMappingURL=scaffold.js.map
