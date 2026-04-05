@@ -29,7 +29,6 @@ export async function scaffold(targetDir: string): Promise<void> {
   const projectName = await ask(rl, 'Nama project: ');
   const projectDesc = await ask(rl, 'Deskripsi singkat: ');
   const techStack   = await ask(rl, 'Tech stack (contoh: Next.js, Python, PostgreSQL): ');
-  const boardId     = await ask(rl, 'SheetMaster Board ID (kosongkan jika belum ada): ');
   const apiKey      = await ask(rl, 'SheetMaster API Key (kosongkan jika belum ada): ');
   const baseUrl     = await ask(rl, 'SheetMaster URL (kosongkan jika belum ada): ');
 
@@ -39,7 +38,6 @@ export async function scaffold(targetDir: string): Promise<void> {
     PROJECT_NAME: projectName,
     PROJECT_DESC: projectDesc,
     TECH_STACK:   techStack,
-    BOARD_ID:     boardId || 'YOUR_BOARD_ID_HERE',
     DATE:         new Date().toISOString().split('T')[0],
   };
 
@@ -56,7 +54,6 @@ export async function scaffold(targetDir: string): Promise<void> {
   const config = {
     apiKey:  apiKey  || 'YOUR_API_KEY_HERE',
     baseUrl: baseUrl || 'YOUR_SHEETMASTER_URL_HERE',
-    boardId: boardId || 'YOUR_BOARD_ID_HERE',
   };
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
   console.log('\n  + .sheetmaster.json');
@@ -76,7 +73,7 @@ export async function scaffold(targetDir: string): Promise<void> {
   console.log('\nMembuat file context...');
 
   // Root files
-  for (const file of ['context.md', 'snap.md', 'log.md', 'decisions.md', 'rules.md']) {
+  for (const file of ['context.md', 'snap.md', 'log.md', 'decisions.md', 'rules.md', 'task-api.md']) {
     copyTemplate(
       path.join(TEMPLATES_DIR, file),
       path.join(agentDir, file),

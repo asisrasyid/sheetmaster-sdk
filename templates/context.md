@@ -1,83 +1,126 @@
-# Project Context — {{PROJECT_NAME}}
+# Context — {{PROJECT_NAME}}
 
-> File ini adalah entry point utama. WAJIB dibaca setiap agent sebelum melakukan apapun.
+> WAJIB dibaca penuh sebelum melakukan apapun.
 
 ---
 
-## Overview
+## Project
 
-**Nama Project:** {{PROJECT_NAME}}
+**Nama:** {{PROJECT_NAME}}
 **Deskripsi:** {{PROJECT_DESC}}
-**Dibuat:** {{DATE}}
 **Tech Stack:** {{TECH_STACK}}
+**Dibuat:** {{DATE}}
 
 ---
 
-## Kredensial SheetMaster
+## Inti Sistem Ini
 
-Semua kredensial ada di `.sheetmaster.json` di root project (tidak di-commit ke GitHub).
+```
+AGENT  →  punya ROLE (agents/*.md)
+           punya TASK (dari SheetMaster)
+           
+FLOW:
+1. Ambil task dari SheetMaster
+2. Diskusikan dengan user — board mana, task mana
+3. Assign ke agent yang sesuai dengan role-nya
+4. Kerjakan sampai selesai
+5. Tandai done, lanjut task berikutnya
+```
+
+**Pemilihan task selalu melalui diskusi dengan user — agent tidak boleh memilih sendiri.**
+
+---
+
+## Kredensial
+
+Baca `.sheetmaster.json` di root project:
 
 ```json
 {
-  "apiKey":  "...",
-  "baseUrl": "...",
-  "boardId": "..."
+  "apiKey": "...",
+  "baseUrl": "..."
 }
 ```
 
-Cara hit API SheetMaster:
-- Method: POST ke `baseUrl`
-- Header: `Content-Type: text/plain`
-- Body JSON: `{ "apiKey": "...", "action": "...", ...params }`
-
----
-
-## Standard Commands
-
-Ketika user mengatakan **"cek task"** atau **"task apa yang tersedia"**:
-1. Baca `.sheetmaster.json` untuk mendapatkan apiKey, baseUrl, boardId
-2. Hit API: action `getBoard` dengan boardId
-3. Tampilkan semua task per kolom beserta statusnya
-4. Update `.agent/snap.md` dengan kondisi terkini
-
-Ketika user mengatakan **"kerjakan task [X]"**:
-1. Baca `.agent/agents/[role].md` sesuai task yang dikerjakan
-2. Kerjakan task sampai selesai
-3. Hit API: action `moveTask` untuk pindahkan task ke kolom berikutnya
-4. Update `.agent/snap.md` dan tulis ringkasan di `.agent/log.md`
-
-Ketika user mengatakan **"task selesai"** atau **"done"**:
-1. Hit API: action `moveTask` — pindahkan task ke kolom `Done`
-2. Update `.agent/snap.md`
-3. Tulis di `.agent/log.md` dengan tag `[DONE]`
-
-Ketika user mengatakan **"buat task baru [judul]"**:
-1. Baca `.sheetmaster.json` untuk boardId
-2. Hit API: action `createTask` di kolom yang sesuai
-3. Tambahkan subtask checklist yang detail
-4. Update `.agent/snap.md`
-
----
-
-## Struktur `.agent/`
-
+Cara hit API — selalu POST ke `baseUrl`:
 ```
-.agent/
-├── context.md       ← kamu sedang baca ini
-├── rules.md         ← rules global semua agent
-├── snap.md          ← status task terkini
-├── log.md           ← history diskusi dan keputusan
-├── decisions.md     ← architectural decisions (ADR)
-├── agents/          ← definisi peran tiap agent
-└── handoff/         ← catatan serah terima antar agent
+POST {baseUrl}
+Content-Type: text/plain
+Body: { "apiKey": "...", "action": "...", ...params }
 ```
 
+Semua action tersedia di `.agent/task-api.md`.
+
 ---
 
-## Cara Mulai (untuk Agent Baru)
+## Langkah Wajib Saat Sesi Dimulai
 
-1. Baca `context.md` ini sampai selesai
-2. Baca `rules.md`
-3. Baca `snap.md` — pahami kondisi task saat ini
-4. Baca `agents/[role].md` sesuai tugasmu
-5. Mulai kerja
+```
+1. Baca context.md ini (sudah kamu lakukan)
+2. Baca rules.md
+3. Baca snap.md — pahami kondisi task terakhir
+4. Baca agents/[role].md sesuai tugasmu
+5. Siap — tunggu instruksi user
+```
+
+**Jangan mulai kerja sebelum user memberikan instruksi eksplisit.**
+
+---
+
+## Cara Cek Task
+
+Jika user berkata **"cek task"**, **"ada task apa"**, atau sejenisnya:
+
+1. Baca `.sheetmaster.json` untuk `apiKey` dan `baseUrl`
+2. Hit `getBoards` → tampilkan daftar board yang tersedia
+3. Tanya user: board mana yang ingin dicek
+4. Hit `getBoard` dengan boardId yang dipilih
+5. Tampilkan task per kolom secara ringkas
+6. Update `.agent/snap.md`
+
+---
+
+## Cara Kerjakan Task
+
+Setelah user menentukan task mana yang dikerjakan:
+
+1. Baca `agents/[role].md` sesuai jenis task
+2. Kerjakan task sampai selesai — jangan berhenti di tengah untuk konfirmasi kecuali ada blocker nyata
+3. Setelah selesai: hit `moveTask` ke kolom berikutnya
+4. Tulis ringkasan di `log.md` dengan tag `[DONE]`
+5. Update `snap.md`
+6. Laporkan ke user: apa yang dikerjakan, apa hasilnya, task apa berikutnya
+
+---
+
+## Cara Tandai Task Selesai (Done)
+
+1. Hit `moveTask` — pindahkan ke kolom `Done`
+2. Centang semua subtask: hit `updateSubTask` dengan `isCompleted: true`
+3. Tulis di `log.md`: `[DONE] nama task — tanggal`
+4. Update `snap.md`
+
+---
+
+## Aturan Penting
+
+- **Jangan tebak boardId atau columnId** — selalu ambil dari API (`getBoards` / `getBoard`)
+- **Jangan pilih task sendiri** — pemilihan task adalah keputusan user
+- **Jangan setengah-setengah** — kalau sudah mulai kerjakan task, selesaikan
+- **Selalu update snap.md** setelah ada perubahan status task
+- **Blocker wajib dilaporkan** — jangan diam jika ada yang tidak bisa diselesaikan
+
+---
+
+## File di `.agent/`
+
+| File | Fungsi |
+|------|--------|
+| `context.md` | Kamu sedang baca ini — entry point |
+| `rules.md` | Rules global semua agent |
+| `snap.md` | Status task terkini |
+| `log.md` | History diskusi dan keputusan |
+| `decisions.md` | Architectural decisions (ADR) |
+| `task-api.md` | Referensi lengkap semua SheetMaster API action |
+| `agents/` | Definisi peran tiap agent |
+| `handoff/` | Catatan serah terima antar agent |
