@@ -1,0 +1,26 @@
+{
+  "name": "sheetmaster-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for SheetMaster — Google Apps Script backed task management API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "sheetmaster",
+    "task-management",
+    "google-apps-script",
+    "sdk"
+  ],
+  "author": "asisrasyid",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
