@@ -59,6 +59,7 @@ class SheetMasterClient {
             title,
             priority: options.priority ?? 'medium',
             ...(options.description ? { description: options.description } : {}),
+            ...(options.deadline ? { deadline: options.deadline } : {}),
         });
     }
     /** Update field task. Hanya sertakan field yang ingin diubah */

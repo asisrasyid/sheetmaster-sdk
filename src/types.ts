@@ -76,6 +76,7 @@ export interface SheetMasterConfig {
 export interface CreateTaskOptions {
   priority?: Priority;
   description?: string;
+  deadline?: string;
 }
 
 export interface UpdateTaskFields {

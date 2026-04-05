@@ -83,6 +83,7 @@ export class SheetMasterClient {
       title,
       priority: options.priority ?? 'medium',
       ...(options.description ? { description: options.description } : {}),
+      ...(options.deadline ? { deadline: options.deadline } : {}),
     });
   }
 
